@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuantMethods Companion (QMC)</title>
+  <link rel="stylesheet" href="qmc.css">
+  <link rel="icon" href="data:,">
+</head>
+<body>
+
+  <div class="qmc-app-container">
+    
+    <!-- QMS Slide-Over Catalog Sidebar -->
+    <aside class="qmc-sidebar" id="qmc-sidebar" aria-label="Main Navigation">
+      <!-- Editable Course Header -->
+      <div class="sidebar-header" id="sidebar-header-container">
+        <h2 id="sidebar-title" style="font-size: 1.05rem; color: #fff; font-weight: 700; letter-spacing: 0.05em;">INSTRUCTOR HUB</h2>
+        <div id="sidebar-subtitle" class="subtitle" style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.15rem;">Curriculum & Course Companion</div>
+      </div>
+
+      <h2 class="sidebar-brand-heading">Select a model:</h2>
+                        
+      <nav class="qmc-menu" id="sidebar-menu">
+        <!-- Dynamically populated by TypeScript -->
+      </nav>
+    </aside>
+
+    <!-- Cascading Submenu Drawer (2nd Tray) -->
+    <aside class="qmc-submenu-drawer collapsed" id="qmc-submenu-drawer" aria-label="Model Problems Submenu">
+      <div class="submenu-header">
+        <h3 id="submenu-title">Model Problems</h3>
+        <button id="submenu-close-btn" class="icon-btn" style="border: none; background: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer;" title="Close Submenu">✕</button>
+      </div>
+      <nav class="submenu-body" id="submenu-menu">
+        <!-- Dynamically populated by TypeScript -->
+      </nav>
+    </aside>
+
+    <!-- Main Workspace Layout -->
+    <main class="qmc-main-layout">
+      
+      <!-- Top Navigation Bar -->
+      <header class="qmc-navbar">
+        <div class="nav-left">
+          <button id="sidebar-toggle" class="icon-btn" title="Toggle Catalog">☰</button>
+          <nav aria-label="Breadcrumb" class="breadcrumb-trail" style="padding-left: 0.5rem;">
+            <span id="bc-model" class="current">Loading...</span>
+          </nav>
+        </div>
+        <div class="nav-right" id="top-mode-controls" style="display: flex; align-items: center; gap: 0.75rem;">
+          <!-- Interfaces Dropdown (Visible only in Build Mode) -->
+          <div id="interfaces-dropdown-container" class="dropdown" style="position: relative; display: inline-block;">
+            <button id="interfaces-dropdown-btn" class="btn-secondary" style="display: none;">Interfaces ▾</button>
+            <div id="interfaces-menu" style="display: none; position: absolute; right: 0; background: #ffffff; border: 1px solid var(--qmc-border); border-radius: var(--radius); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); z-index: 1000; min-width: 220px; padding: 0.5rem 0;">
+              <button id="export-pkg-btn" style="width: 100%; text-align: left; background: none; border: none; padding: 0.5rem 1rem; cursor: pointer; font-size: 0.85rem; color: #1e293b;">📥 Save course package to computer</button>
+              <button id="import-pkg-btn" style="width: 100%; text-align: left; background: none; border: none; padding: 0.5rem 1rem; cursor: pointer; font-size: 0.85rem; color: #1e293b;">📂 Open course package from computer</button>
+              <div style="border-top: 1px solid #e2e8f0; margin: 0.25rem 0;"></div>
+              <button id="export-blackboard-btn" style="width: 100%; text-align: left; background: none; border: none; padding: 0.5rem 1rem; cursor: pointer; font-size: 0.85rem; color: #64748b;" title="Coming Soon">🚀 Export to Blackboard (Coming Soon)</button>
+            </div>
+          </div>
+          <input type="file" id="import-file-input" style="display: none;" accept=".qmc.json,.json">
+
+          <!-- Single Mode Toggle Button -->
+          <button id="mode-toggle-btn" class="btn-secondary">Build Mode</button>
+
+          <!-- Settings Button (Visible only in Build Mode) -->
+          <button id="theme-btn" class="icon-btn" title="Settings" style="display: none;">⚙️ Settings</button>
+        </div>
+      </header>
+      
+      <!-- Workbench Canvas -->
+      <section class="qmc-workbench" id="workbench-canvas">
+        <div id="workbench-content-area">
+          <!-- Dynamically populated by TypeScript -->
+        </div>
+      </section>
+    </main>
+
+  </div>
+
+  <!-- Theme Customizer Modal -->
+  <div id="theme-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <h3>Customize Academic Theme</h3>
+      <p>Select a preset palette or adjust your primary institutional brand color.</p>
+      
+      <div class="preset-row">
+        <button class="preset-chip" data-color="#1e1b4b" style="background: #1e1b4b;">QMS Slate</button>
+        <button class="preset-chip" data-color="#8b0000" style="background: #8b0000;">Ivy Crimson</button>
+        <button class="preset-chip" data-color="#1e3a8a" style="background: #1e3a8a;">Pacific Navy</button>
+        <button class="preset-chip" data-color="#065f46" style="background: #065f46;">Forest Gold</button>
+      </div>
+
+      <div class="custom-color-picker">
+        <label for="custom-hex">Custom Primary Color:</label>
+        <input type="color" id="custom-hex" value="#1e1b4b">
+      </div>
+
+      <div class="modal-actions">
+        <button id="close-modal-btn" class="btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

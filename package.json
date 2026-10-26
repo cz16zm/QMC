@@ -1,0 +1,13 @@
+{
+  "name": "quant-methods-companion",
+  "version": "1.0.0",
+  "description": "Pedagogical course container and companion to QMS Solver",
+  "main": "build.js",
+  "scripts": {
+    "build": "node build.js",
+    "watch": "tsc -w"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

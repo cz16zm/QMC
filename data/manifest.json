@@ -1,0 +1,41 @@
+{
+  "models": [
+    {
+      "modelId": "LINEAR_PROGRAMMING",
+      "name": "Linear Programming",
+      "archetypes": [
+        { "id": "ad-mix-a", "title": "LP-1: Small Business Advertising Mix", "file": "linear-programming/ad-mix-a.json" }
+      ]
+    },
+    {
+      "modelId": "INTEGER_PROGRAMMING",
+      "name": "Integer Programming",
+      "archetypes": []
+    },
+    {
+      "modelId": "ASSIGNMENT",
+      "name": "Assignment Model",
+      "archetypes": []
+    },
+    {
+      "modelId": "TRANSPORTATION",
+      "name": "Transportation",
+      "archetypes": []
+    },
+    {
+      "modelId": "CPM_PERT",
+      "name": "CPM / PERT",
+      "archetypes": []
+    },
+    {
+      "modelId": "MINIMAL_SPANNING_TREE",
+      "name": "Minimal Spanning Tree",
+      "archetypes": []
+    },
+    {
+      "modelId": "SHORTEST_PATH",
+      "name": "Shortest Path",
+      "archetypes": []
+    }
+  ]
+}

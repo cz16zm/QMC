@@ -1,0 +1,22 @@
+{
+  "id": "ad-mix-a",
+  "title": "LP-1: Small Business Advertising Mix",
+  "modelId": "LINEAR_PROGRAMMING",
+  "summary": "A classic resource allocation model balancing local reach, budget caps, and structural media ratios.",
+  "part1": "A local retail business relies on local newspaper and radio advertising to drive customer acquisition and monthly sales revenue. Because radio broadcasting carries a significantly higher cost per spot, management enforces a strict policy requiring that the number of newspaper advertisements placed each month must be at least three times the number of radio advertisements. Total advertising expenditures are capped at a maximum of $2,000 per month. Historical marketing data indicates that each newspaper ad generates an average of $180 in sales revenue, whereas each radio ad generates $700. Newspaper ads cost $50 each to place, and radio ads cost $500 each. Management wants to determine the optimal advertising mix that maximizes total sales revenue subject to budget and ratio constraints.",
+  "part2": "<ul><li><strong>Decision Trade-off:</strong> High-yield radio spots ($700 revenue / $500 cost) versus low-cost, high-volume newspaper placements ($180 revenue / $50 cost).</li><li><strong>Binding Policy Constraints:</strong> The structural ratio (X₁ ≥ 3X₂) forces a minimum floor on newspaper presence, preventing management from exclusively buying radio spots despite their higher individual return.</li><li><strong>Resource Bottleneck:</strong> The $2,000 monthly cash flow ceiling restricts maximum portfolio scaling.</li></ul>",
+  "formulation": "Maximize Objective: Z = 180X₁ + 700X₂<br>Subject to:<br>&bull; Budget Constraint: 50X₁ + 500X₂ ≤ 2000<br>&bull; Ratio Constraint: X₁ - 3X₂ ≥ 0<br>&bull; Non-negativity: X₁, X₂ ≥ 0",
+  "payload": {
+    "qmsHeader": { "version": "2.0", "modelId": "LINEAR_PROGRAMMING", "title": "LP-1: Small Business Advertising Mix", "savedAt": "2026-10-24T00:00:00.000Z" },
+    "payload": {
+      "objectiveType": "MAXIMIZE",
+      "objectiveName": "Z",
+      "variables": [{ "id": "v0", "name": "X 1" }, { "id": "v1", "name": "X 2" }],
+      "objectiveCoefficients": [180, 700],
+      "constraints": [
+        { "name": "BudgetLimit", "coefficients": [50, 500], "operator": "LTE", "rhs": 2000 },
+        { "name": "AdvertisingRatio", "coefficients": [1, -3], "operator": "GTE", "rhs": 0 }
+      ]
+    }
+  }
+}
