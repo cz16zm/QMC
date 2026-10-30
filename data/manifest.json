@@ -4,7 +4,22 @@
       "modelId": "LINEAR_PROGRAMMING",
       "name": "Linear Programming",
       "archetypes": [
-        { "id": "ad-mix-a", "title": "LP-1: Small Business Advertising Mix", "file": "linear-programming/ad-mix-a.json" }
+        { "id": "ad-mix-a", "title": "LP-1: Small Business Advertising Mix", "file": "linear-programming/ad-mix-a.json" },
+        { "id": "butcher-kid", "title": "LP-2: Butcher Kid Hamburger Optimization", "file": "linear-programming/butcher-kid.json" },
+        { "id": "sweet-feed", "title": "LP-3: Sweet-Feed Mix Cost Minimization", "file": "linear-programming/sweet-feed.json" },
+        { "id": "industrial-gears", "title": "LP-4: Industrial Gear Production Profit Maximization", "file": "linear-programming/industrial-gears.json" },
+        { "id": "blueberry-farmer", "title": "LP-5: Organic Blueberry and Spread Production & Advertising Mix", "file": "linear-programming/blueberry-farmer.json" },
+        { "id": "sporting-goods", "title": "LP-6: Sporting Goods Production Optimization", "file": "linear-programming/sporting-goods.json" },
+        { "id": "moonbeam-appliances", "title": "LP-7: Moonbeam Home Appliance Profit Maximization", "file": "linear-programming/moonbeam-appliances.json" },
+        { "id": "lone-star-fertilizer", "title": "LP-8: Lone Star Fertilizer Production and Allocation", "file": "linear-programming/lone-star-fertilizer.json" },
+        { "id": "student-investment", "title": "LP-9: Student Investment Portfolio Optimization", "file": "linear-programming/student-investment.json" },
+        { "id": "greers-fabrics", "title": "LP-10: Retailer Advertising Media Mix", "file": "linear-programming/greers-fabrics.json" },
+        { "id": "dr-o-punch", "title": "LP-11: Special Holiday Punch Cost Minimization", "file": "linear-programming/dr-o-punch.json" },
+        { "id": "king-bee-toys", "title": "LP-12: Toy Doll Production Profit Maximization", "file": "linear-programming/king-bee-toys.json" },
+        { "id": "ian-smeltz-hotdogs", "title": "LP-13: Custom Hot Dog Ingredient Blend Minimization", "file": "linear-programming/ian-smeltz-hotdogs.json" },
+        { "id": "investor-portfolio", "title": "LP-14: Investor Portfolio Annual Return Maximization", "file": "linear-programming/investor-portfolio.json" },
+        { "id": "manufacturing-firm", "title": "LP-15: Multi-Work Center Production Planning", "file": "linear-programming/manufacturing-firm.json" },
+        { "id": "university-farm", "title": "LP-16: University Agricultural Crop Mix Optimization", "file": "linear-programming/university-farm.json" }
       ]
     },
     {

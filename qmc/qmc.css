@@ -154,8 +154,6 @@ body {
   position: absolute;
   left: 320px;
   width: 320px;
-  height: auto;
-  max-height: calc(100vh - 2rem);
   background-color: #0f172a;
   color: #cbd5e0;
   display: flex;
@@ -166,6 +164,7 @@ body {
   border-radius: var(--radius);
   transform: translateX(0);
   transition: transform 0.3s ease, opacity 0.3s ease, top 0.2s ease;
+  overflow: hidden; /* Prevent outer spill */
 }
 
 .qmc-submenu-drawer.collapsed {
@@ -180,6 +179,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: #0f172a;
+  flex-shrink: 0;
 }
 
 .submenu-header h3 {
@@ -189,13 +190,63 @@ body {
 }
 
 .submenu-body {
-  padding: 0.75rem 0;
+  padding: 0.5rem 0 1rem 0;
   overflow-y: auto;
   flex: 1;
+  min-height: 0; /* Ensures flex container calculates scroll height accurately */
+}
+
+/* Custom Scrollbar for Submenu Tray */
+.submenu-body::-webkit-scrollbar {
+  width: 6px;
+}
+.submenu-body::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+.submenu-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+.submenu-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .submenu-body ul {
   list-style: none;
+}
+
+.submenu-body .nav-item-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.15rem 0.75rem;
+}
+
+.submenu-body .nav-link {
+  flex: 1;
+  text-align: left;
+  background: none;
+  border: none;
+  color: #cbd5e0;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.825rem;
+  line-height: 1.35;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.submenu-body .nav-link:hover:not([disabled]) {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.submenu-body .nav-link.active {
+  background-color: var(--qmc-primary);
+  color: #ffffff;
+  font-weight: 600;
 }
 
 /* Main Layout */
@@ -279,18 +330,36 @@ body {
 }
 .btn-text:hover { color: var(--qmc-text-dark); }
 
-/* Teaching / Reading Cards */
+/* QMS-Aligned Rounded Card Styles with Left Accent Bars */
 .intro-container, .archetype-intro-card, .qmc-part-card {
   background-color: var(--qmc-card-bg);
   border: 1px solid var(--qmc-border);
+  border-left: 4px solid var(--qmc-primary); /* Default accent */
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   margin-bottom: 2rem;
   padding: 2.5rem;
 }
-.archetype-intro-card { padding: 2rem; }
+
+.archetype-intro-card { 
+  padding: 2rem; 
+  border-left: 4px solid var(--qmc-primary);
+}
 .archetype-intro-card h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.25rem; }
 .archetype-intro-card p { color: var(--qmc-text-muted); }
+
+/* Distinct QMS Color Accents for Problem Sections */
+.qmc-part-card.desc-card {
+  border-left: 4px solid var(--qmc-primary); /* Default accent */
+}
+
+.qmc-part-card.analysis-card {
+  border-left: 4px solid var(--qmc-primary); /* Default accent */
+}
+
+.qmc-part-card.formulation-card {
+  border-left: 4px solid var(--qmc-primary); /* Default accent */
+}
 
 .part-header {
   border-bottom: 1px solid var(--qmc-border);
@@ -304,7 +373,6 @@ body {
 
 .math-block {
   background-color: #f8fafc;
-  border-left: 4px solid var(--qmc-primary);
   padding: 1.25rem 1.75rem;
   border-radius: 0 var(--radius) var(--radius) 0;
   font-family: monospace;

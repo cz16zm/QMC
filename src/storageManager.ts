@@ -111,14 +111,31 @@ export class StorageManager {
 
     customArchetypes.forEach(customItem => {
       if (!includeHidden && hiddenIds.includes(customItem.id)) return;
-      const targetModel = merged.models.find(m => m.modelId === customItem.modelId);
+      
+      const normCustomId = customItem.modelId.toLowerCase().replace(/_/g, "-");
+
+      // Ensure it's removed from any other model category if the modelId was changed during editing
+      merged.models.forEach(m => {
+        const normModelId = m.modelId.toLowerCase().replace(/_/g, "-");
+        if (normModelId !== normCustomId) {
+          m.archetypes = m.archetypes.filter(a => a.id !== customItem.id);
+        }
+      });
+
+      const targetModel = merged.models.find(m => {
+        const normModelId = m.modelId.toLowerCase().replace(/_/g, "-");
+        return normModelId === normCustomId;
+      });
+
       if (targetModel) {
-        const exists = targetModel.archetypes.some(a => a.id === customItem.id);
-        if (!exists) {
+        const existingArch = targetModel.archetypes.find(a => a.id === customItem.id);
+        if (existingArch) {
+          existingArch.title = customItem.title;
+        } else {
           targetModel.archetypes.push({
             id: customItem.id,
             title: customItem.title,
-            file: `custom/${customItem.id}.json`
+            file: `linear-programming/${customItem.id}.json`
           });
         }
       }

@@ -1,53 +1,93 @@
 import { StorageManager, Manifest, ProblemPayload, ArchetypeRef } from "./storageManager.js";
 
+// Complete QMS-aligned catalog structure with all historical model ID aliases for manifest matching
 const MODEL_GROUPS = [
   {
     groupName: "Mathematical Programming",
-    modelIds: ["linear-programming", "LINEAR_PROGRAMMING", "integer-programming", "INTEGER_PROGRAMMING", "assignment", "ASSIGNMENT", "transportation", "TRANSPORTATION"]
+    models: [
+      { id: "linear-programming", aliases: ["linear-programming", "LINEAR_PROGRAMMING"], name: "Linear Programming" },
+      { id: "integer-programming", aliases: ["integer-programming", "INTEGER_PROGRAMMING"], name: "Integer Programming" },
+      { id: "assignment", aliases: ["assignment", "ASSIGNMENT"], name: "Assignment Model" },
+      { id: "transportation", aliases: ["transportation", "TRANSPORTATION"], name: "Transportation Model" }
+    ]
   },
   {
     groupName: "Network Models",
-    modelIds: ["cpm-pert", "CPM_PERT", "minimal-spanning", "MINIMAL_SPANNING", "shortest-path", "SHORTEST_PATH", "maximum-flow", "MAX_FLOW_MIN_CUT", "traveling-sales", "TRAVELING_SALES"]
+    models: [
+      { id: "cpm-pert", aliases: ["cpm-pert", "CPM_PERT"], name: "CPM / PERT" },
+      { id: "minimal-spanning", aliases: ["minimal-spanning", "MINIMAL_SPANNING"], name: "Minimal Spanning Tree" },
+      { id: "shortest-path", aliases: ["shortest-path", "SHORTEST_PATH"], name: "Shortest Path" },
+      { id: "maximum-flow", aliases: ["maximum-flow", "MAX_FLOW_MIN_CUT"], name: "Maximum Flow / Min Cut" },
+      { id: "traveling-salesman", aliases: ["traveling-salesman", "TRAVELING_SALES", "traveling-sales"], name: "Traveling Salesman" }
+    ]
   },
   {
     groupName: "Forecasting Models",
-    modelIds: ["averaging", "AVERAGING", "linear-regression", "LINEAR_REGRESSION"]
+    models: [
+      { id: "time-series-averaging", aliases: ["time-series-averaging", "averaging", "AVERAGING"], name: "Averaging & Smoothing" },
+      { id: "linear-regression", aliases: ["linear-regression", "LINEAR_REGRESSION"], name: "Linear Regression" }
+    ]
   },
   {
     groupName: "Inventory & Production",
-    modelIds: ["eoq-discounts", "EOQ_DISCOUNTS", "eoq-stockouts", "EOQ_STOCKOUTS", "economic-lot-size", "ECONOMIC_LOT_SIZE"]
+    models: [
+      { id: "eoq-discounts", aliases: ["eoq-discounts", "EOQ_DISCOUNTS"], name: "EOQ & Quantity Discounts" },
+      { id: "eoq-stockouts", aliases: ["eoq-stockouts", "EOQ_STOCKOUTS"], name: "EOQ with Planned Stockouts" },
+      { id: "economic-lot-size", aliases: ["economic-lot-size", "ECONOMIC_LOT_SIZE"], name: "Economic Production Lot Size" }
+    ]
   },
   {
     groupName: "Dynamic Programming",
-    modelIds: ["knapsack", "KNAPSACK", "stagecoach", "STAGECOACH", "production-planning", "PRODUCTION_PLANNING"]
+    models: [
+      { id: "knapsack", aliases: ["knapsack", "KNAPSACK"], name: "Knapsack Model" },
+      { id: "stagecoach", aliases: ["stagecoach", "STAGECOACH"], name: "Stagecoach / Shortest Path" },
+      { id: "production-inventory-dp", aliases: ["production-inventory-dp", "production-planning", "PRODUCTION_PLANNING"], name: "Production & Inventory Planning" }
+    ]
   },
   {
     groupName: "Decision Theory",
-    modelIds: ["decision-analysis", "DECISION_ANALYSIS"]
+    models: [
+      { id: "decision-analysis", aliases: ["decision-analysis", "DECISION_ANALYSIS"], name: "Decision Analysis & Trees" }
+    ]
   },
   {
     groupName: "Queueing Systems",
-    modelIds: ["queues", "QUEUES"]
+    models: [
+      { id: "queues-single-multi", aliases: ["queues-single-multi", "queues", "QUEUES"], name: "Queueing Models (M/M/1, M/M/k)" }
+    ]
   },
   {
     groupName: "Finite Markov Chains",
-    modelIds: ["markov-chains", "MARKOV_CHAINS"]
+    models: [
+      { id: "markov-chains", aliases: ["markov-chains", "MARKOV_CHAINS"], name: "Markov Chains & Transition Matrix" }
+    ]
   },
   {
     groupName: "Learning Curves",
-    modelIds: ["learning-curves", "LEARNING_CURVES"]
+    models: [
+      { id: "learning-curves", aliases: ["learning-curves", "LEARNING_CURVES"], name: "Learning Curve Analysis" }
+    ]
   },
   {
     groupName: "Simulation Models",
-    modelIds: ["sim-queues", "SIM_QUEUES", "sim-inventory", "SIM_INVENTORY"]
+    models: [
+      { id: "sim-queues", aliases: ["sim-queues", "SIM_QUEUES"], name: "Queueing Simulation" },
+      { id: "sim-inventory", aliases: ["sim-inventory", "SIM_INVENTORY"], name: "Inventory Simulation" }
+    ]
   },
   {
     groupName: "Capacity Management",
-    modelIds: ["breakeven", "BREAKEVEN", "make-or-buy", "MAKE_OR_BUY", "cost-volume", "COST_VOLUME"]
+    models: [
+      { id: "breakeven", aliases: ["breakeven", "BREAKEVEN"], name: "Breakeven Analysis" },
+      { id: "make-or-buy", aliases: ["make-or-buy", "MAKE_OR_BUY"], name: "Make-or-Buy Decision" },
+      { id: "cost-volume", aliases: ["cost-volume", "COST_VOLUME"], name: "Cost-Volume Analysis" }
+    ]
   },
   {
     groupName: "Facilities Planning",
-    modelIds: ["site-location", "SITE_LOCATION"]
+    models: [
+      { id: "site-location", aliases: ["site-location", "SITE_LOCATION"], name: "Facility / Site Location" }
+    ]
   }
 ];
 
@@ -66,6 +106,19 @@ class QMCApp {
     this.manifest = this.storage.getMergedManifest(this.currentMode === "build");
     this.setupEventListeners();
     this.setMode(this.currentMode);
+    
+    // Ensure sidebar starts collapsed on initial startup
+    const sidebar = document.getElementById("qmc-sidebar");
+    sidebar?.classList.add("collapsed");
+
+    // Load last known active item from localStorage, default to "introduction" if none exists
+    const savedItemKey = localStorage.getItem("qmc_active_item_key");
+    if (savedItemKey) {
+      this.activeItemKey = savedItemKey;
+    } else {
+      this.activeItemKey = "introduction";
+    }
+
     this.renderSidebar();
     this.renderActiveView();
   }
@@ -268,22 +321,17 @@ class QMCApp {
       </div>
     `;
 
-    const renderedModelIds = new Set<string>();
-
     MODEL_GROUPS.forEach(group => {
-      const groupModels = this.manifest!.models.filter(m => group.modelIds.includes(m.modelId));
-      if (groupModels.length === 0) return;
-
       html += `<div class="menu-category"><span class="category-title">${group.groupName}</span><ul>`;
-      groupModels.forEach(model => {
-        renderedModelIds.add(model.modelId);
-        const count = model.archetypes.length;
-        const isActiveModel = this.activeSubmenuModelId === model.modelId;
+      group.models.forEach(modelDef => {
+        const manifestModel = this.manifest!.models.find(m => modelDef.aliases.includes(m.modelId));
+        const count = manifestModel ? manifestModel.archetypes.length : 0;
+        const isActiveModel = this.activeSubmenuModelId === modelDef.id;
 
         html += `
           <li>
-            <button class="model-nav-item ${isActiveModel ? 'active' : ''}" data-modelid="${model.modelId}">
-              <span>${model.name}</span>
+            <button class="model-nav-item ${isActiveModel ? 'active' : ''}" data-modelid="${modelDef.id}">
+              <span>${modelDef.name}</span>
               <span class="badge-count">${count}</span>
             </button>
           </li>
@@ -292,34 +340,16 @@ class QMCApp {
       html += `</ul></div>`;
     });
 
-    const otherModels = this.manifest.models.filter(m => !renderedModelIds.has(m.modelId));
-    if (otherModels.length > 0) {
-      html += `<div class="menu-category"><span class="category-title">Other Models</span><ul>`;
-      otherModels.forEach(model => {
-        const count = model.archetypes.length;
-        const isActiveModel = this.activeSubmenuModelId === model.modelId;
-        html += `
-          <li>
-            <button class="model-nav-item ${isActiveModel ? 'active' : ''}" data-modelid="${model.modelId}">
-              <span>${model.name}</span>
-              <span class="badge-count">${count}</span>
-            </button>
-          </li>
-        `;
-      });
-      html += `</ul></div>`;
-    }
-
     menuContainer.innerHTML = html;
 
     menuContainer.querySelectorAll("[data-id='introduction']").forEach(btn => {
       btn.addEventListener("click", () => {
         this.activeItemKey = "introduction";
+        localStorage.setItem("qmc_active_item_key", "introduction");
         this.activeSubmenuModelId = null;
         document.getElementById("qmc-submenu-drawer")?.classList.add("collapsed");
         this.renderSidebar();
         this.renderActiveView();
-        document.getElementById("qmc-sidebar")?.classList.add("collapsed");
       });
     });
 
@@ -328,9 +358,9 @@ class QMCApp {
         const currentTarget = e.currentTarget as HTMLElement;
         const modelId = currentTarget.getAttribute("data-modelid");
         if (modelId) {
-          // Capture button vertical position and clamp to window height
           const rect = currentTarget.getBoundingClientRect();
-          this.submenuTopOffset = Math.max(10, Math.min(rect.top, window.innerHeight - 300));
+          // Keep top aligned exactly with the clicked model item
+          this.submenuTopOffset = rect.top;
           
           this.activeSubmenuModelId = modelId;
           this.renderSidebar();
@@ -350,38 +380,45 @@ class QMCApp {
     const submenuMenu = document.getElementById("submenu-menu");
     if (!submenuDrawer || !submenuTitle || !submenuMenu || !this.manifest) return;
 
-    // Apply dynamically calculated top position aligned with the clicked model
+    // Anchor top to the selected model item and set max-height dynamically to fit the viewport remainder
     submenuDrawer.style.top = `${this.submenuTopOffset}px`;
+    submenuDrawer.style.maxHeight = `calc(100vh - ${this.submenuTopOffset + 20}px)`;
 
-    const targetModel = this.manifest.models.find(m => m.modelId === this.activeSubmenuModelId);
-    if (!targetModel) {
-      submenuDrawer.classList.add("collapsed");
-      return;
+    let modelDef: any = null;
+    for (const g of MODEL_GROUPS) {
+      const found = g.models.find(m => m.id === this.activeSubmenuModelId);
+      if (found) { modelDef = found; break; }
     }
 
-    submenuTitle.textContent = targetModel.name;
-    const hiddenIds = this.storage.getHiddenIds();
+    let targetModel: any = null;
+    if (modelDef) {
+      targetModel = this.manifest.models.find(m => modelDef.aliases.includes(m.modelId));
+    }
 
-    let html = `<ul style="padding: 0 1rem;">`;
+    submenuTitle.textContent = modelDef?.name || "Model Problems";
+    const hiddenIds = this.storage.getHiddenIds();
+    const archetypes: ArchetypeRef[] = targetModel ? targetModel.archetypes : [];
+
+    let html = `<ul>`;
 
     if (this.currentMode === "build") {
       html += `
-        <li style="margin-bottom: 0.75rem; padding: 0 0.5rem;">
-          <button class="btn-text add-model-arch-btn" data-modelid="${targetModel.modelId}" style="font-size: 0.8rem; color: #38bdf8; font-weight: 600; background: none; border: none; cursor: pointer;">+ Add New Problem</button>
+        <li style="margin-bottom: 0.75rem; padding: 0 0.75rem;">
+          <button class="btn-text add-model-arch-btn" data-modelid="${modelDef?.id || this.activeSubmenuModelId}" style="font-size: 0.8rem; color: #38bdf8; font-weight: 600; background: none; border: none; cursor: pointer;">+ Add New Problem</button>
         </li>
       `;
     }
 
-    if (targetModel.archetypes.length === 0) {
-      html += `<li><span style="color: #64748b; font-size: 0.85rem; padding: 0.5rem; display: block;">No problems available</span></li>`;
+    if (archetypes.length === 0) {
+      html += `<li><span style="color: #64748b; font-size: 0.85rem; padding: 0.5rem 0.75rem; display: block;">No problems available</span></li>`;
     } else {
-      targetModel.archetypes.forEach(arch => {
+      archetypes.forEach((arch: ArchetypeRef) => {
         const isHidden = hiddenIds.includes(arch.id);
         const isActive = this.activeItemKey === arch.id;
 
         html += `
           <li class="nav-item-wrapper" ${isHidden && this.currentMode === 'build' ? 'style="opacity: 0.5;"' : ''}>
-            <button class="nav-link ${isActive ? 'active' : ''}" data-id="${arch.id}" style="font-size: 0.85rem; padding: 0.5rem 0.75rem;">
+            <button class="nav-link ${isActive ? 'active' : ''}" data-id="${arch.id}">
               ${arch.title} ${isHidden && this.currentMode === 'build' ? '<span style="font-size: 0.6rem; color: #ef4444; font-weight: bold;">(Hidden)</span>' : ''}
             </button>
         `;
@@ -404,9 +441,10 @@ class QMCApp {
 
     submenuMenu.querySelectorAll(".nav-link").forEach(btn => {
       btn.addEventListener("click", (e) => {
-        const id = (e.target as HTMLElement).getAttribute("data-id");
+        const id = (e.currentTarget as HTMLElement).getAttribute("data-id");
         if (id) {
           this.activeItemKey = id;
+          localStorage.setItem("qmc_active_item_key", id);
           this.renderSubmenuDrawer();
           this.renderActiveView();
           document.getElementById("qmc-sidebar")?.classList.add("collapsed");
@@ -419,7 +457,7 @@ class QMCApp {
 
     submenuMenu.querySelectorAll(".hide-arch-btn").forEach(btn => {
       btn.addEventListener("click", (e) => {
-        const id = (e.target as HTMLElement).getAttribute("data-id");
+        const id = (e.currentTarget as HTMLElement).getAttribute("data-id");
         if (id) {
           this.storage.hideArchetype(id);
           this.manifest = this.storage.getMergedManifest(this.currentMode === "build");
@@ -431,7 +469,7 @@ class QMCApp {
 
     submenuMenu.querySelectorAll(".unhide-arch-btn").forEach(btn => {
       btn.addEventListener("click", (e) => {
-        const id = (e.target as HTMLElement).getAttribute("data-id");
+        const id = (e.currentTarget as HTMLElement).getAttribute("data-id");
         if (id) {
           this.storage.unhideArchetype(id);
           this.manifest = this.storage.getMergedManifest(this.currentMode === "build");
@@ -443,7 +481,7 @@ class QMCApp {
 
     submenuMenu.querySelectorAll(".add-model-arch-btn").forEach(btn => {
       btn.addEventListener("click", (e) => {
-        const modelId = (e.target as HTMLElement).getAttribute("data-modelid");
+        const modelId = (e.currentTarget as HTMLElement).getAttribute("data-modelid");
         if (modelId) {
           this.renderAuthoringForm(modelId);
           document.getElementById("qmc-sidebar")?.classList.add("collapsed");
@@ -568,12 +606,12 @@ class QMCApp {
         <p>${problemData.summary}</p>
       </div>
 
-      <article class="qmc-part-card">
+      <article class="qmc-part-card desc-card">
         <div class="part-header"><h2>Problem Description</h2></div>
         <div class="part-body"><p>${problemData.part1}</p></div>
       </article>
 
-      <article class="qmc-part-card">
+      <article class="qmc-part-card analysis-card">
         <div class="part-header"><h2>Managerial Analysis & Key Elements</h2></div>
         <div class="part-body">${problemData.part2}</div>
       </article>
@@ -594,8 +632,25 @@ class QMCApp {
     `;
 
     document.getElementById("launch-qms-btn")?.addEventListener("click", () => {
-      this.qmsChannel.postMessage({ type: "LOAD_MODEL", payload: problemData.payload });
-      window.open("../QMS/qms/index.html?autoLoad=true", "_blank");
+      // problemData.payload is already the complete QmsProblemPayload ({ qmsHeader, payload })
+      const qmsPayload = problemData.payload;
+
+      // Ensure the authoritative modelId is set in the header
+      if (qmsPayload && qmsPayload.qmsHeader) {
+        qmsPayload.qmsHeader.modelId = problemData.modelId || qmsPayload.qmsHeader.modelId;
+      }
+
+      // Store in localStorage to guarantee delivery on initial open
+      localStorage.setItem("qms_pending_payload", JSON.stringify(qmsPayload));
+
+      // Broadcast to live channel if tab is already open
+      this.qmsChannel.postMessage({ type: "LOAD_MODEL", payload: qmsPayload });
+
+      // Open or re-focus named QMS solver tab (prevents endless duplicate tabs)
+      const qmsWindow = window.open("/QMS/qms/index.html?autoLoad=true", "QMS_SOLVER_WINDOW");
+      if (qmsWindow) {
+        qmsWindow.focus();
+      }
     });
 
     document.getElementById("toggle-json-btn")?.addEventListener("click", () => {
@@ -625,7 +680,7 @@ class QMCApp {
           <div style="margin-bottom: 1.25rem;">
             <label style="display: block; font-weight: 700; margin-bottom: 0.5rem;">Target Model Category:</label>
             <select id="auth-model-id" style="width: 100%; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--qmc-border); font-size: 1rem;">
-              ${this.manifest.models.map(m => `<option value="${m.modelId}" ${m.modelId === (existingProblem?.modelId || preselectedModelId) ? 'selected' : ''}>${m.name}</option>`).join("")}
+              ${MODEL_GROUPS.flatMap(g => g.models).map(m => `<option value="${m.id}" ${m.id === (existingProblem?.modelId || preselectedModelId) ? 'selected' : ''}>${m.name}</option>`).join("")}
             </select>
           </div>
 
@@ -731,7 +786,7 @@ class QMCApp {
       reader.readAsText(file);
     });
 
-    document.getElementById("authoring-form")?.addEventListener("submit", (e) => {
+document.getElementById("authoring-form")?.addEventListener("submit", (e) => {
       e.preventDefault();
       if (!parsedPayload) {
         alert("Please verify or upload a QMS payload first.");
@@ -757,9 +812,15 @@ class QMCApp {
       };
 
       this.storage.saveCustomArchetype(updatedProblem);
-      this.manifest = this.storage.getMergedManifest(this.currentMode === "build");
+      
+      // Force active item key to the saved problem ID and switch mode cleanly
       this.activeItemKey = id;
+      localStorage.setItem("qmc_active_item_key", id);
+      
       alert("Problem saved successfully!");
+      
+      // Re-initialize manifest and switch back to Teach Mode
+      this.manifest = this.storage.getMergedManifest(false);
       this.setMode("teach");
     });
   }
